@@ -1,0 +1,8 @@
+this project will randomly generate a sentence that features fun words and
+unusual structure.
+
+i will come up with a list of sentence-form templates, and draw lists of nifty
+adjectives and other word-types from some source online (potentially downloaded).
+
+using a series of random input the program will assemble various words into the
+provided template and present the resulting sentence to the user.
