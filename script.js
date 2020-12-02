@@ -28,7 +28,7 @@ const adjs = [
     'pugnacious',   'sagacious',     'inexorable',       'ineptitude',
     'abjuration',   'coruscant',     'glib',             'vis-a-vis',
     'insidious',    'presumptive',   'chronic'
-    ];
+];
 
 const nouns = [
     'feist',       'nostalgia',    'dispensation',  'displeasure',
@@ -55,7 +55,7 @@ const nouns = [
     'caveat',      'paradigm',     'disparity',     'ennui',
     'facet',       'citadel',      'purveyor',      'marquise',
     'discourse',   'prong',        'adjunct'
-    ];
+];
 
 const transVerbs = [
     'chasten',    'exhort',      'berate',     'enrage',
@@ -73,7 +73,7 @@ const transVerbs = [
     'kick-start', 'hammer',      'nail',       'club',
     'flog',       'clutch',      'hook',       'cling',
     'grip'
-    ];
+];
 
 const intVerbs = [
     'stumble',   'wobble',      'swing',     'lurch',
@@ -90,7 +90,7 @@ const intVerbs = [
     'trip',      'skip',        'whirl',     'gallop',
     'stride',    'zoom',        'trot',      'dart',
     'sprint',    'shoot',       'leap'
-    ];
+];
 
 const adverbs = [
     'abnormally',    'absentmindedly',   'accidentally', 'actually',
@@ -177,7 +177,7 @@ const adverbs = [
     'yesterday',   'yieldingly',
     'youthfully',  'zealously',
     'zestfully',   'zestily'
-    ];
+];
 
 const preps = [
     'aboard',      'about',     'above',     'across',
@@ -198,26 +198,36 @@ const preps = [
     'underneath',  'unlike',    'until',     'up',
     'upon',        'versus',    'via',       'with',
     'within',      'without'
-    ];
+];
 
-const auxVerbs = ['will', 'shall', 'may', 'might', 'can', 'could', 'must', 'ought to', 'should', 'would', 'used to', 'needs to'];
+const auxVerbs = [
+    'will', 'shall', 'may', 'might', 'can', 'could', 'must',
+    'ought to', 'should', 'would', 'used to', 'needs to'
+];
 
-
-
+// Assembles a noun phrase in the form of [1] an article and [2] a noun with
+// 50% chance for [3] an adjective modifying the noun and a 50% chance
+// beyond that for [4] an adverb modifying the adjective.
 function getNounPhrase() {
+    // chooses the [2] noun
     let noun = nouns[Math.floor(Math.random() * nouns.length)];
+    // begins concatenating the noun phrase
     let nounPhrase = noun;
+    // gives a 50% chance to add an [3] adjective
     if (Math.random() >= .5) {
         let adj = adjs[Math.floor(Math.random() * adjs.length)];
         nounPhrase = adj + ' ' + nounPhrase;
+        // gives a further 50% chance to add an [4] adverb
         if (Math.random() >= .5) {
             let adverb = adverbs[Math.floor(Math.random() * adverbs.length)];
             nounPhrase = adverb + ' ' + nounPhrase;
         }
     }
-    if (Math.random() >= .5) {
+    // chooses definite or indefinite [1] article with 50% chance for each
+    if (Math.random() >= .5) { 
         nounPhrase = 'the ' + nounPhrase;
     } else {
+        // checks for a vowel at the start of the noun phrase, assigns "a"/"an"
         if (nounPhrase.indexOf(nounPhrase.match(/[aeiou]/)[0]) === 0) {
             nounPhrase = 'an ' + nounPhrase;
         } else {
@@ -227,15 +237,23 @@ function getNounPhrase() {
     return nounPhrase;
 }
 
+// Assembles a verb phrase consisting of [1] a verb, potentially [2] an adverb,
+// and in the case of transitive verbs [3] a direct object (using
+// getNounPhrase()). I add a [4] helper verb to the beginning of the verb phrase
+// in order to avoid properly tensing irregular verbs (and regular ones).
 function getVerbPhrase() {
     let verbPhrase = '';
     let verb = '';
+    // chooses an intransitive [1] verb or transitive verb with [3] object
     if (Math.random() >= .5) {
         verb = intVerbs[Math.floor(Math.random() * intVerbs.length)];
     } else {
-        verb = transVerbs[Math.floor(Math.random() * transVerbs.length)] + ' ' + getNounPhrase();
+        verb = transVerbs[Math.floor(Math.random() * transVerbs.length)] +
+            ' ' + getNounPhrase();
     }
+    // begins verb phrase concatenation
     verbPhrase += verb;
+    // gives a 50% chance to add an [2] adverb
     if (Math.random() >= .5) {
         let adverb = adverbs[Math.floor(Math.random() * adverbs.length)];
         if (Math.random() >= .5) {
@@ -244,23 +262,35 @@ function getVerbPhrase() {
             verbPhrase = verbPhrase + ' ' + adverb;
         }
     }
-    return ' ' + auxVerbs[Math.floor(Math.random() * auxVerbs.length)] + ' ' + verbPhrase;
+    // adds [4] helper verb within the return phrase
+    return ' ' + auxVerbs[Math.floor(Math.random() * auxVerbs.length)] +
+        ' ' + verbPhrase;
 }
 
+// Assembles a full sentence utilizing getNounPhrase() and getVerbPhrase()
+// with chance for a prepositional phrase. Capitalizes first letter and
+// adds final punctuation.
 function getSentence() {
     let sentence = '';
     let punc = '.';
+    //builds a basic sentence of the form "noun does verb"
     sentence = getNounPhrase() + getVerbPhrase();
+    //gives a 50% chance for a prepositional phrase at the beginning or end
     if (Math.random() >= .5) {
-        if(Math.random() >= .5) {
-            sentence = preps[Math.floor(Math.random() * preps.length)] + ' ' + getNounPhrase() + ' ' + sentence;
+        if (Math.random() >= .5) {
+            sentence = preps[Math.floor(Math.random() * preps.length)] +
+                ' ' + getNounPhrase() + ' ' + sentence;
         } else {
-            sentence = sentence + ' ' + preps[Math.floor(Math.random() * preps.length)] + ' ' + getNounPhrase();
+            sentence = sentence + ' ' + preps[Math.floor(Math.random() *
+                preps.length)] + ' ' + getNounPhrase();
         }
     }
+    // replaces the first (lowercase) letter with a capitalized letter
     sentence = sentence.replace(/[a-z]/,sentence.charAt(0).toUpperCase());
+    // could modify to use randomized punctuation
     sentence += punc;
     return sentence;
 }
 
+// This is why we're here! Prints our glorious sentence to the console.
 console.log(getSentence());
